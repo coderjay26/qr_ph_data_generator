@@ -1,30 +1,80 @@
-/// Supported QR Ph acquirers / wallets.
+/// The wallet or bank (acquirer) a QR Ph payload is generated for.
 ///
-/// The raw EMV merchant-account prefixes are kept identical to the
-/// original `GcashController` implementation so existing QRs stay stable.
+/// Use this enum — instead of a raw string — when building a
+/// [QrPhAccount], so unsupported values are caught at compile time:
+///
+/// ```dart
+/// const account = QrPhAccount(
+///   bank: QrPhBank.gcash,
+///   accountNumber: '09171234567',
+///   accountName: 'JUAN A DELA CRUZ',
+///   branchLocation: 'QUEZON CITY',
+/// );
+/// ```
+///
+/// If you receive the bank as a plain string (e.g. from a database or an
+/// API), convert it with [QrPhBankPayload.parse].
 enum QrPhBank {
+  /// GCash wallet (`GXCHPHM2XXX` merchant-account prefix).
   gcash,
-  bdo,
-  bpi,
+
+  /// Maya wallet.
+  ///
+  /// Reuses the BDO merchant-account prefix plus the legacy
+  /// [QrPhBankPayload.mayaSuffix], preserving the original behaviour.
   maya,
-  unknown,
+
+  /// BDO Unibank (`BNORPHMMXXX` merchant-account prefix).
+  bdo,
+
+  /// Bank of the Philippine Islands (`BOPIPHMMXXX` prefix).
+  bpi,
+
+  /// Fallback for unrecognized bank names.
+  ///
+  /// Resolves to the BDO prefix, matching the original `bankUrl()`
+  /// default branch. Prefer handling unknown input explicitly instead of
+  /// relying on this.
+  unknown;
+
+  /// Uppercase display label, e.g. `GCASH`.
+  String get label => name.toUpperCase();
 }
 
-/// Raw merchant-account prefixes from `sample.md`.
+/// Raw EMV merchant-account prefixes the payload is built from.
+///
+/// The constants are kept identical to the original `GcashController`
+/// implementation so previously generated QRs stay stable.
 abstract final class QrPhBankPayload {
+  /// Merchant-account prefix for [QrPhBank.gcash].
   static const gcash =
       '00020101021227830012com.p2pqrpay0111GXCHPHM2XXX020899964403031521702000000065604';
+
+  /// Merchant-account prefix for [QrPhBank.bdo]
+  /// (also used as the base for [QrPhBank.maya] and [QrPhBank.unknown]).
   static const bdo =
       '00020101021227590012com.p2pqrpay0111BNORPHMMXXX02089996440304';
+
+  /// Merchant-account prefix for [QrPhBank.bpi].
   static const bpi =
       '00020101021127610012com.p2pqrpay0111BOPIPHMMXXX02089996440304';
 
-  /// Appended right after the account number when `bank == maya`.
-  /// Preserved verbatim from the original implementation.
+  /// Suffix appended right after the account number for [QrPhBank.maya].
+  ///
+  /// Preserved verbatim from the original implementation. If this value
+  /// looks unfamiliar, verify it against your acquirer's specification —
+  /// it resembles account-specific data.
   static const mayaSuffix = '0515+63-966-7004308';
 
-  /// Case-insensitive lookup. Unknown / empty names fall back to [bdo],
-  /// matching the original `bankUrl()` default branch.
+  /// Converts a free-form bank name into a [QrPhBank].
+  ///
+  /// Matching is case-insensitive and ignores surrounding whitespace:
+  /// `'gcash'` → [QrPhBank.gcash]. Anything unrecognized (including
+  /// `null` and `''`) yields [QrPhBank.unknown].
+  ///
+  /// ```dart
+  /// QrPhBankPayload.parse('Maya'); // QrPhBank.maya
+  /// ```
   static QrPhBank parse(String? bankName) {
     switch (bankName?.trim().toUpperCase()) {
       case 'GCASH':
@@ -40,8 +90,10 @@ abstract final class QrPhBankPayload {
     }
   }
 
-  /// Base payload for [bank]. [QrPhBank.maya] and [QrPhBank.unknown]
-  /// intentionally resolve to the BDO prefix (original behaviour).
+  /// Returns the merchant-account base prefix for [bank].
+  ///
+  /// [QrPhBank.maya] and [QrPhBank.unknown] intentionally resolve to the
+  /// BDO prefix (original behaviour).
   static String basePayload(QrPhBank bank) {
     switch (bank) {
       case QrPhBank.gcash:
@@ -55,6 +107,7 @@ abstract final class QrPhBankPayload {
     }
   }
 
+  /// String-based variant of [basePayload]; see [parse].
   static String basePayloadForName(String? bankName) =>
       basePayload(parse(bankName));
 }
