@@ -26,7 +26,10 @@ Add the package to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  qrph_data_generator: ^0.1.0
+  qrph_data_generator:
+    git: 
+      url: https://github.com/coderjay26/qr_ph_data_generator.git
+      ref: v0.1.0
 ```
 
 *Requires `sdk: ^3.10.7` and `flutter: ">=3.38.0"`.*
