@@ -46,6 +46,11 @@ const account = QrPhAccount(
   branchLocation: 'QUEZON CITY',
 );
 
+// If you receive the bank name as a plain string (e.g., from an API or database),
+// you can parse it case-insensitively:
+// final bank = QrPhBankPayload.parse('GCASH'); 
+// final account = QrPhAccount(bank: bank, ...);
+
 // 1️⃣ Static QR (no amount)
 final staticData = QrPhDataGenerator.generate(account: account);
 
