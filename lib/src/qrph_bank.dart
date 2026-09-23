@@ -18,11 +18,6 @@ enum QrPhBank {
   /// GCash wallet (`GXCHPHM2XXX` merchant-account prefix).
   gcash,
 
-  /// Maya wallet.
-  ///
-  /// Reuses the BDO merchant-account prefix plus the legacy
-  /// [QrPhBankPayload.mayaSuffix], preserving the original behaviour.
-  maya,
 
   /// BDO Unibank (`BNORPHMMXXX` merchant-account prefix).
   bdo,
@@ -51,7 +46,7 @@ abstract final class QrPhBankPayload {
       '00020101021227830012com.p2pqrpay0111GXCHPHM2XXX020899964403031521702000000065604';
 
   /// Merchant-account prefix for [QrPhBank.bdo]
-  /// (also used as the base for [QrPhBank.maya] and [QrPhBank.unknown]).
+  /// (also used as the base for [QrPhBank.unknown]).
   static const bdo =
       '00020101021227590012com.p2pqrpay0111BNORPHMMXXX02089996440304';
 
@@ -59,12 +54,7 @@ abstract final class QrPhBankPayload {
   static const bpi =
       '00020101021127610012com.p2pqrpay0111BOPIPHMMXXX02089996440304';
 
-  /// Suffix appended right after the account number for [QrPhBank.maya].
-  ///
-  /// Preserved verbatim from the original implementation. If this value
-  /// looks unfamiliar, verify it against your acquirer's specification —
-  /// it resembles account-specific data.
-  static const mayaSuffix = '0515+63-966-7004308';
+
 
   /// Converts a free-form bank name into a [QrPhBank].
   ///
@@ -73,7 +63,7 @@ abstract final class QrPhBankPayload {
   /// `null` and `''`) yields [QrPhBank.unknown].
   ///
   /// ```dart
-  /// QrPhBankPayload.parse('Maya'); // QrPhBank.maya
+  /// QrPhBankPayload.parse('BDO'); // QrPhBank.bdo
   /// ```
   static QrPhBank parse(String? bankName) {
     switch (bankName?.trim().toUpperCase()) {
@@ -83,8 +73,7 @@ abstract final class QrPhBankPayload {
         return QrPhBank.bdo;
       case 'BPI':
         return QrPhBank.bpi;
-      case 'MAYA':
-        return QrPhBank.maya;
+
       default:
         return QrPhBank.unknown;
     }
@@ -92,7 +81,7 @@ abstract final class QrPhBankPayload {
 
   /// Returns the merchant-account base prefix for [bank].
   ///
-  /// [QrPhBank.maya] and [QrPhBank.unknown] intentionally resolve to the
+  /// [QrPhBank.unknown] intentionally resolves to the
   /// BDO prefix (original behaviour).
   static String basePayload(QrPhBank bank) {
     switch (bank) {
@@ -101,7 +90,7 @@ abstract final class QrPhBankPayload {
       case QrPhBank.bpi:
         return bpi;
       case QrPhBank.bdo:
-      case QrPhBank.maya:
+
       case QrPhBank.unknown:
         return bdo;
     }

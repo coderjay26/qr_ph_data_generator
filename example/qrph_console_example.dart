@@ -5,7 +5,7 @@ import 'package:qrph_data_generator/qrph_data_generator.dart';
 void main() {
   // NOTE: values below are fictitious demo data — replace with real details.
   const account = QrPhAccount(
-    bankName: 'GCASH',
+    bank: QrPhBank.gcash,
     accountNumber: '09171234567',
     accountName: 'JUAN A DELA CRUZ',
     branchLocation: 'QUEZON CITY',

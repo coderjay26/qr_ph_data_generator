@@ -4,8 +4,8 @@ import 'qrph_crc.dart';
 
 /// Generates EMVCo / QR Ph data strings (the text you encode into a QR).
 ///
-/// Ported from `sample.md` (`GcashController.getGcashdetails`) and cleaned up:
-/// * no dependency on `mybuddy2_0` — pass a plain [QrPhAccount].
+/// Ported from the original `GcashController.getGcashdetails` and cleaned up:
+/// * no dependency on app-specific models — pass a plain [QrPhAccount].
 /// * `amount` is optional. When `null`, EMV tag `54` is omitted
 ///   (static QR, see sample `...53036085802PH...`).
 /// * CRC-16/CCITT-FALSE handling extracted to [QrPhCrc].
@@ -46,7 +46,7 @@ class QrPhDataGenerator {
   /// Resolves the merchant-account base and normalizes EMV tag `01`
   /// (point of initiation): `11` = static (no amount), `12` = dynamic.
   ///
-  /// This matches `sample.md` (`...010211...` for the amount-less sample)
+  /// This matches the original EMV pattern (`...010211...` for the amount-less sample)
   /// while keeping the original `...010212...` constants for dynamic QRs.
   static String resolveBasePayload(QrPhBank bank, bool hasAmount) {
     final base = QrPhBankPayload.basePayload(bank);
@@ -64,9 +64,9 @@ class QrPhDataGenerator {
 
   /// Builds the final QR payload string including the `6304XXXX` CRC trailer.
   ///
-  /// Layout (preserved from `sample.md`):
+  /// Layout (preserved from the original implementation):
   /// ```text
-  /// <bankBase><len(accountNumber)><accountNumber>[mayaSuffix]
+  /// <bankBase><len(accountNumber)><accountNumber>
   /// 52046016 5303608 [54<len><amount>]
   /// 5802PH 59<len><accountName> 60<len><branchLocation> 61<postalLen><postalCode>
   /// 6304<CRC>
@@ -86,8 +86,7 @@ class QrPhDataGenerator {
       throw ArgumentError('currencyCode must be 3 digits (e.g. 608 for PHP).');
     }
 
-    final bank = QrPhBankPayload.parse(account.bankName);
-    final base = resolveBasePayload(bank, amount != null);
+    final base = resolveBasePayload(account.bank, amount != null);
 
     final userId = account.accountNumber;
     final prefixUserId = calculateNamePrefixDigit(userId);
@@ -97,15 +96,12 @@ class QrPhDataGenerator {
     final areaCode = calculateNamePrefixDigit(location);
     final postalPrefix = calculateNamePrefixDigit(account.postalCode);
 
-    final mayaSuffix =
-        bank == QrPhBank.maya ? QrPhBankPayload.mayaSuffix : '';
 
     final amountSection = amount == null
         ? ''
         : '${calculatePrefixDigit(amount)}${amount.toStringAsFixed(2)}';
 
     final qrWithoutCrc = '$base$prefixUserId$userId'
-        '$mayaSuffix'
         '52${merchantCategoryCode.length.toString().padLeft(2, '0')}$merchantCategoryCode'
         '53${currencyCode.length.toString().padLeft(2, '0')}$currencyCode'
         '$amountSection'

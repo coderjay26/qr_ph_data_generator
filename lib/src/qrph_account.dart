@@ -1,10 +1,13 @@
-/// Self-contained account model.
+import 'qrph_bank.dart';
+
+/// Self-contained account model representing a merchant or payee.
 ///
-/// Replaces the app-specific `BankDetails` (`mybuddy2_0`) dependency from
-/// `sample.md` so the package can be reused in any app.
+/// Replaces the app-specific `BankDetails` dependency
+/// so the package can be reused in any app.
 class QrPhAccount {
-  /// e.g. `GCASH`, `BDO`, `BPI`, `MAYA` (case-insensitive).
-  final String bankName;
+  /// The bank or e-wallet of this account.
+  /// Used to determine the correct payload prefix for the QR Ph code.
+  final QrPhBank bank;
 
   /// Wallet / account number, e.g. `09171234567`.
   final String accountNumber;
@@ -18,8 +21,11 @@ class QrPhAccount {
   /// EMV tag 61 (postal code). Original code hardcodes `1234`.
   final String postalCode;
 
+  /// Creates a new [QrPhAccount] instance.
+  /// 
+  /// The [bank], [accountNumber], [accountName], and [branchLocation] are required.
   const QrPhAccount({
-    required this.bankName,
+    required this.bank,
     required this.accountNumber,
     required this.accountName,
     required this.branchLocation,

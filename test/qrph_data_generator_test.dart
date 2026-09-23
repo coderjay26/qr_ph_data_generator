@@ -10,7 +10,7 @@ void main() {
 
     test('verify() accepts a payload with a correct CRC trailer', () {
       const account = QrPhAccount(
-        bankName: 'GCASH',
+        bank: QrPhBank.gcash,
         accountNumber: '09171234567',
         accountName: 'JUAN A DELA CRUZ',
         branchLocation: 'QUEZON CITY',
@@ -57,7 +57,7 @@ void main() {
 
   group('QrPhDataGenerator.generate', () {
     const account = QrPhAccount(
-      bankName: 'GCASH',
+      bank: QrPhBank.gcash,
       accountNumber: '09171234567',
       accountName: 'JUAN A DELA CRUZ',
       branchLocation: 'QUEZON CITY',
@@ -81,22 +81,10 @@ void main() {
       expect(QrPhCrc.verify(payload), isTrue);
     });
 
-    test('maya accounts include the legacy maya suffix', () {
-      const mayaAccount = QrPhAccount(
-        bankName: 'maya',
-        accountNumber: '09181234567',
-        accountName: 'MARIA CLARA',
-        branchLocation: 'MAKATI',
-      );
-      final payload =
-          QrPhDataGenerator.generate(account: mayaAccount, amount: 50);
-      expect(payload, contains(QrPhBankPayload.mayaSuffix));
-      expect(QrPhCrc.verify(payload), isTrue);
-    });
 
     test('validates empty fields', () {
       const bad = QrPhAccount(
-        bankName: 'GCASH',
+        bank: QrPhBank.gcash,
         accountNumber: '',
         accountName: 'X',
         branchLocation: 'Y',

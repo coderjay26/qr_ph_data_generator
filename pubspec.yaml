@@ -1,5 +1,5 @@
 name: qrph_data_generator
-description: EMVCo / QR Ph payload (data string) generator for Philippine e-wallets and banks (GCash, Maya, BDO, BPI). Pure-Dart CRC-16/CCITT-FALSE implementation.
+description: EMVCo / QR Ph payload (data string) generator for Philippine e-wallets and banks (GCash, BDO, BPI). Pure-Dart CRC-16/CCITT-FALSE implementation.
 version: 0.1.0
 homepage: https://github.com/jj-automation-solution/qrph_data_generator
 repository: https://github.com/jj-automation-solution/qrph_data_generator

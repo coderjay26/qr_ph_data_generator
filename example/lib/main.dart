@@ -28,7 +28,7 @@ class QrPhDemoPage extends StatefulWidget {
 }
 
 class _QrPhDemoPageState extends State<QrPhDemoPage> {
-  static const _banks = ['GCASH', 'MAYA', 'BDO', 'BPI'];
+  static const _banks = ['GCASH', 'BDO', 'BPI'];
 
   String _bank = _banks.first;
   final _numberCtrl = TextEditingController();
@@ -68,7 +68,7 @@ class _QrPhDemoPageState extends State<QrPhDemoPage> {
         final amount =
             amountText.isEmpty ? null : double.parse(amountText);
         final account = QrPhAccount(
-          bankName: _bank,
+          bank: QrPhBankPayload.parse(_bank),
           accountNumber: _numberCtrl.text.trim(),
           accountName: _nameCtrl.text.trim(),
           branchLocation: _locationCtrl.text.trim(),
