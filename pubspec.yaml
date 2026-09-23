@@ -1,0 +1,21 @@
+name: qrph_data_generator
+description: EMVCo / QR Ph payload (data string) generator for Philippine e-wallets and banks (GCash, Maya, BDO, BPI). Pure-Dart CRC-16/CCITT-FALSE implementation.
+version: 0.1.0
+homepage: https://github.com/jj-automation-solution/qrph_data_generator
+repository: https://github.com/jj-automation-solution/qrph_data_generator
+issue_tracker: https://github.com/jj-automation-solution/qrph_data_generator/issues
+
+environment:
+  sdk: ^3.10.7
+  flutter: ">=3.38.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
