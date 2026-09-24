@@ -1,12 +1,12 @@
 # 🚀 QR Ph Data Generator
 
-An EMVCo / **QR Ph** payload (data string) generator for Philippine e-wallets and banks (`GCASH`, `BDO`, `BPI`). 
+An EMVCo / **QR Ph** payload (data string) generator for Philippine e-wallets and banks (`GCASH`, `BDO`, `BPI`, plus BIC-derived `MAYA`, `METROBANK`, `LANDBANK`, `UNIONBANK`, `RCBC`, `CHINABANK`, `SECURITYBANK`, `PNB`, `CIMB`, `TONIK`, `GOTYME`, `UNO` — see ⚠️ below). 
 
 Feed the resulting string into any QR renderer (e.g. [`qr_flutter`](https://pub.dev/packages/qr_flutter)) to display a scannable QR Ph code.
 
 Ported from the original `GcashController` implementation and decoupled from app-specific models, making it entirely reusable across projects.
 
-- 🛠 Built & tested with **Flutter 3.38.8 / Dart 3.10.7**
+- 🛠 Built & tested with **Flutter 3.22.3 / Dart 3.4.4**
 - 📦 Package: `qrph_data_generator`
 
 ---
@@ -14,9 +14,11 @@ Ported from the original `GcashController` implementation and decoupled from app
 ## ✨ Features
 
 - **Dynamic & Static QR**: Generate dynamic (with amount, EMV tag `54`) or static (no amount) QR Ph payloads.
-- **Type-Safe Banks**: Uses the `QrPhBank` enum to enforce supported banks (GCash, BDO, BPI).
+- **Type-Safe Banks**: Uses the `QrPhBank` enum to enforce supported banks (GCash, BDO, BPI — plus BIC-derived Maya, Metrobank, LandBank, UnionBank, RCBC, Chinabank, Security Bank, PNB, CIMB, Tonik, GoTyme, UNO).
 - **CRC-16/CCITT-FALSE**: Includes `QrPhCrc` (`poly 0x1021`, `init 0xFFFF`), complete with `verify()`.
 - **Legacy Support**: Deprecated `GcashController` typedef kept for backwards compatibility.
+
+> ⚠️ **UNTESTED banks:** every bank beyond GCash / BDO / BPI was derived from its official SWIFT/BIC code using the BDO short payload template and is **NOT verified against a real QR scan** from that bank's app. Validate by scanning before production use.
 
 ---
 
@@ -32,7 +34,7 @@ dependencies:
       ref: v0.1.0
 ```
 
-*Requires `sdk: ^3.10.7` and `flutter: ">=3.38.0"`.*
+*Requires `sdk: '>=3.4.0 <4.0.0'` and `flutter: ">=3.22.0"`.*
 
 ---
 

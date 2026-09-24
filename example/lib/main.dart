@@ -28,7 +28,25 @@ class QrPhDemoPage extends StatefulWidget {
 }
 
 class _QrPhDemoPageState extends State<QrPhDemoPage> {
-  static const _banks = ['GCASH', 'BDO', 'BPI'];
+  static const _banks = [
+    'GCASH',
+    'BDO',
+    'BPI',
+    // UNTESTED — BIC-derived payloads, not verified with a real scan.
+    'MAYA',
+    'MAYA BANK',
+    'METROBANK',
+    'LANDBANK',
+    'UNIONBANK',
+    'RCBC',
+    'CHINABANK',
+    'SECURITY BANK',
+    'PNB',
+    'CIMB',
+    'TONIK',
+    'GOTYME',
+    'UNO',
+  ];
 
   String _bank = _banks.first;
   final _numberCtrl = TextEditingController();
@@ -93,7 +111,7 @@ class _QrPhDemoPageState extends State<QrPhDemoPage> {
         padding: const EdgeInsets.all(16),
         children: [
           DropdownButtonFormField<String>(
-            initialValue: _bank,
+            value: _bank,
             decoration: const InputDecoration(labelText: 'Bank / wallet'),
             items: [
               for (final bank in _banks)
@@ -102,6 +120,12 @@ class _QrPhDemoPageState extends State<QrPhDemoPage> {
             onChanged: (value) {
               if (value != null) setState(() => _bank = value);
             },
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Banks beyond GCASH / BDO / BPI use UNTESTED BIC-derived '
+            'payloads — validate by scanning before production use.',
+            style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
           TextField(
             controller: _numberCtrl,

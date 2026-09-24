@@ -53,6 +53,63 @@ void main() {
       expect(QrPhDataGenerator.bankUrl('SOME_UNKNOWN_BANK'),
           QrPhBankPayload.bdo);
     });
+
+    test(
+        'resolves added banks (UNTESTED payloads — BIC-derived, '
+        'not verified with a real scan)', () {
+      expect(QrPhBankPayload.parse('MAYA'), QrPhBank.maya);
+      expect(QrPhBankPayload.parse('PayMaya'), QrPhBank.maya);
+      expect(QrPhBankPayload.parse('Maya Bank'), QrPhBank.mayaBank);
+      expect(QrPhBankPayload.parse('Metrobank'), QrPhBank.metrobank);
+      expect(QrPhBankPayload.parse('MBTC'), QrPhBank.metrobank);
+      expect(QrPhBankPayload.parse('Landbank'), QrPhBank.landbank);
+      expect(QrPhBankPayload.parse('LBP'), QrPhBank.landbank);
+      expect(QrPhBankPayload.parse('UBP'), QrPhBank.unionbank);
+      expect(QrPhBankPayload.parse('RCBC'), QrPhBank.rcbc);
+      expect(QrPhBankPayload.parse('Chinabank'), QrPhBank.chinabank);
+      expect(QrPhBankPayload.parse('SBC'), QrPhBank.securitybank);
+      expect(QrPhBankPayload.parse('PNB'), QrPhBank.pnb);
+      expect(QrPhBankPayload.parse('CIMB'), QrPhBank.cimb);
+      expect(QrPhBankPayload.parse('Tonik'), QrPhBank.tonik);
+      expect(QrPhBankPayload.parse('GoTyme'), QrPhBank.gotyme);
+      expect(QrPhBankPayload.parse('UNO'), QrPhBank.uno);
+    });
+
+    test('every non-unknown bank generates a CRC-valid payload', () {
+      const bicByBank = {
+        QrPhBank.maya: 'PAPHPHM1XXX',
+        QrPhBank.mayaBank: 'MYDBPHM2XXX',
+        QrPhBank.metrobank: 'MBTCPHMMXXX',
+        QrPhBank.landbank: 'TLBPPHMMXXX',
+        QrPhBank.unionbank: 'UBPHPHMMXXX',
+        QrPhBank.rcbc: 'RCBCPHMMXXX',
+        QrPhBank.chinabank: 'CHBKPHMMXXX',
+        QrPhBank.securitybank: 'SETCPHMMXXX',
+        QrPhBank.pnb: 'PNBMPHMMXXX',
+        QrPhBank.cimb: 'CIPHPHMMXXX',
+        QrPhBank.tonik: 'TODGPHM2XXX',
+        QrPhBank.gotyme: 'GOTYPHM2XXX',
+        QrPhBank.uno: 'UNODPHM2XXX',
+      };
+      for (final entry in bicByBank.entries) {
+        final account = QrPhAccount(
+          bank: entry.key,
+          accountNumber: '09171234567',
+          accountName: 'JUAN A DELA CRUZ',
+          branchLocation: 'QUEZON CITY',
+        );
+        final staticQr = QrPhDataGenerator.generate(account: account);
+        final dynamicQr =
+            QrPhDataGenerator.generate(account: account, amount: 100);
+        expect(staticQr, startsWith('000201010211'),
+            reason: entry.key.name);
+        expect(dynamicQr, startsWith('000201010212'),
+            reason: entry.key.name);
+        expect(staticQr, contains(entry.value), reason: entry.key.name);
+        expect(QrPhCrc.verify(staticQr), isTrue, reason: entry.key.name);
+        expect(QrPhCrc.verify(dynamicQr), isTrue, reason: entry.key.name);
+      }
+    });
   });
 
   group('QrPhDataGenerator.generate', () {
